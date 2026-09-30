@@ -9,6 +9,8 @@ pub struct Cli {
     pub len: Option<usize>,
     #[clap(short, long)]
     pub timeout_sec: Option<u64>,
+    #[clap(short = 'T', long)]
+    pub timestamp: bool,
     /// Also print to stdout
     #[clap(short, long)]
     pub stdout: bool,

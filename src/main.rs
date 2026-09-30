@@ -2,7 +2,7 @@ use std::{
     fs::File,
     io::Write,
     thread::sleep,
-    time::{Duration, Instant},
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
 use clap::Parser;
@@ -22,6 +22,7 @@ fn main() -> eyre::Result<()> {
         chip,
         protocol,
         timeout_sec,
+        timestamp,
     } = Cli::parse();
     if out.is_none() {
         stdout = false;
@@ -77,10 +78,15 @@ fn main() -> eyre::Result<()> {
                 // println!("read {count} bytes");
             } else {
                 sleep(Duration::from_millis(3));
+                continue;
             }
             let read = &buf[..count];
             left -= count;
             total += count;
+            if timestamp {
+                let ts = format!("{}: ", SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs());
+                f.write_all(ts.as_bytes()).unwrap();
+            }
             f.write_all(read)?;
             if stdout {
                 std::io::stdout().write_all(read).unwrap();
